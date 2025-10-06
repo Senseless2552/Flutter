@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_app_1/Styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -11,19 +12,32 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
 
   late String _userToDo;
-  List todolist = [];
+  List<String> todolist = [];
 
 @override
   void initState() {
     super.initState();
+    _loadTasks();
+  }
 
-    todolist.addAll([]);
+  Future<void> _loadTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final tasks = prefs.getStringList('todolist') ?? [];
+    setState(() {
+      todolist = tasks;
+    });
+  }
+
+Future<void> _saveTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('todolist', todolist);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         title: Text("ToDo-List", style: textstyle,),
         centerTitle: true,
         backgroundColor: Colors.black,
@@ -36,6 +50,7 @@ class _HomeState extends State<Home> {
               setState(() {
                 todolist.removeAt(index);
               });
+            _saveTasks();
             }, 
             child: Card(
               color: Colors.grey[500],
@@ -51,6 +66,7 @@ class _HomeState extends State<Home> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
+          _userToDo = '';
           showDialog(context: context, builder: (BuildContext context) {
             return AlertDialog(
               backgroundColor: Colors.grey[500],
@@ -74,6 +90,7 @@ class _HomeState extends State<Home> {
                   setState(() {
                     todolist.add(_userToDo);
                   });
+                  _saveTasks();
                   Navigator.of(context).pop();
                 },
                 child: Text("Добавить", style:TextStyle(color: Colors.black))
