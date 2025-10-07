@@ -9,7 +9,7 @@ class MainScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text("ToDo-List", style: textstyle,),
+        title: Text("My ToDo app", style: textstyle,),
         centerTitle: true,
         backgroundColor: Colors.black,
       ),

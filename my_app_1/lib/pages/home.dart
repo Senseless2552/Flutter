@@ -13,6 +13,7 @@ class _HomeState extends State<Home> {
 
   late String _userToDo;
   List<String> todolist = [];
+  Set<String> completedTasks = {};
 
 @override
   void initState() {
@@ -23,6 +24,7 @@ class _HomeState extends State<Home> {
   Future<void> _loadTasks() async {
     final prefs = await SharedPreferences.getInstance();
     final tasks = prefs.getStringList('todolist') ?? [];
+    
     setState(() {
       todolist = tasks;
     });
@@ -55,11 +57,16 @@ Future<void> _saveTasks() async {
             child: Card(
               color: Colors.grey[500],
               child: ListTile(
+                trailing: IconButton(onPressed: () {setState(() {
+                todolist.removeAt(index);
+              });
+                _saveTasks();
+              },
+                icon: Icon(Icons.done), color: Colors.white),
                 title: Center (
                   child: Text(todolist[index], 
                   style: textstyle)))
             )  
-              
           ); 
         }
       ),
